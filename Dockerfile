@@ -80,4 +80,15 @@ RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
     mv signal-cli /usr/local/bin/signal-cli && \
     rm -f signal-cli-"${VERSION}"-Linux-native.tar.gz
 
-CMD ["node", "src/server.js"]
+# Entrypoint: symlink signal-cli data to the persistent volume so account
+# registration survives redeploys, then start the wrapper.
+RUN printf '%s\n' \
+  '#!/usr/bin/env bash' \
+  'set -e' \
+  'mkdir -p /data/signal-cli' \
+  'mkdir -p /root/.local/share' \
+  'ln -sfn /data/signal-cli /root/.local/share/signal-cli' \
+  'exec node src/server.js' \
+  > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+CMD ["/app/entrypoint.sh"]
