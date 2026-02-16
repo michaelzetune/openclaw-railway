@@ -95,13 +95,10 @@
   "skills": {
     "install": {
       "nodeManager": "npm"
-    }
-  },
-  "mcp": {
-    "servers": {
-      "todoist": {
-        "command": "npx",
-        "args": ["-y", "@modelcontextprotocol/server-todoist"],
+    },
+    "entries": {
+      "todoist-cli": {
+        "enabled": true,
         "env": {
           "TODOIST_API_TOKEN": "${TODOIST_API_KEY}"
         }
