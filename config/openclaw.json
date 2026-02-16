@@ -97,7 +97,7 @@
       "nodeManager": "npm"
     },
     "entries": {
-      "todoist-cli": {
+      "todoist": {
         "enabled": true,
         "env": {
           "TODOIST_API_TOKEN": "${TODOIST_API_KEY}"
