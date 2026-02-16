@@ -71,6 +71,11 @@ ENV OPENCLAW_PUBLIC_PORT=8080
 ENV PORT=8080
 EXPOSE 8080
 
+# Add rclone
+RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
+    dpkg -i rclone-current-linux-amd64.deb && \
+    rm -f rclone-current-linux-amd64.deb
+
 # Add signal-cli native binary
 RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
       https://github.com/AsamK/signal-cli/releases/latest | sed 's/^.*\/v//') && \
