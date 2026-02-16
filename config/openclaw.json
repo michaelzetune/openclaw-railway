@@ -17,6 +17,9 @@
       }
     }
   },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
   "agents": {
     "defaults": {
       "workspace": "/data/workspace",
