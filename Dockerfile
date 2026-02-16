@@ -65,6 +65,7 @@ RUN printf '%s\n' '#!/usr/bin/env bash' 'exec node /openclaw/dist/entry.js "$@"'
   && chmod +x /usr/local/bin/openclaw
 
 COPY src ./src
+COPY config ./config
 
 # The wrapper listens on this port.
 ENV OPENCLAW_PUBLIC_PORT=8080
@@ -80,11 +81,16 @@ RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
     mv signal-cli /usr/local/bin/signal-cli && \
     rm -f signal-cli-"${VERSION}"-Linux-native.tar.gz
 
-# Entrypoint: symlink signal-cli data to the persistent volume so account
-# registration survives redeploys, then start the wrapper.
+# Entrypoint: deploy repo config as source of truth, symlink signal-cli data
+# to the persistent volume, then start.
 RUN printf '%s\n' \
   '#!/usr/bin/env bash' \
   'set -e' \
+  '# Repo config is the source of truth — overwrite on every deploy' \
+  'mkdir -p /data/.clawdbot' \
+  'cp /app/config/openclaw.json /data/.clawdbot/openclaw.json' \
+  'echo "[entrypoint] deployed config from /app/config/openclaw.json"' \
+  '# Persist signal-cli account data across redeploys' \
   'mkdir -p /data/signal-cli' \
   'mkdir -p /root/.local/share' \
   'ln -sfn /data/signal-cli /root/.local/share/signal-cli' \

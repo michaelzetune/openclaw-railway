@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.9",
+    "lastTouchedAt": "2026-02-16T01:34:42.879Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-16T01:13:12.924Z",
+    "lastRunVersion": "2026.2.9",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "api_key"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/data/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "signal": {
+      "enabled": true,
+      "account": "+13478503001",
+      "httpPort": 8090,
+      "cliPath": "signal-cli",
+      "autoStart": true,
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "+12145787115",
+        "+17187559836",
+        "+19739307449"
+      ],
+      "groupAllowFrom": [
+        "qYl2WsmPySkB6YWepZpRsomseWlL3mbyLiuMPEgIH0Q="
+      ],
+      "groupPolicy": "open",
+      "dms": {
+        "+17187559836": {
+          "historyLimit": 50
+        },
+        "+19739307449": {
+          "historyLimit": 50
+        }
+      },
+      "actions": {
+        "reactions": true
+      },
+      "heartbeat": {
+        "showOk": true,
+        "showAlerts": true,
+        "useIndicator": true
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    },
+    "trustedProxies": [
+      "127.0.0.1"
+    ],
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "signal": {
+        "enabled": true
+      }
+    }
+  }
+}
