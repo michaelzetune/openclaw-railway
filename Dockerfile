@@ -100,6 +100,10 @@ RUN printf '%s\n' \
   'mkdir -p /data/signal-cli' \
   'mkdir -p /root/.local/share' \
   'ln -sfn /data/signal-cli /root/.local/share/signal-cli' \
+  '# Persist rclone config across redeploys' \
+  'mkdir -p /data/rclone' \
+  'mkdir -p /root/.config' \
+  'ln -sfn /data/rclone /root/.config/rclone' \
   'exec node src/server.js' \
   > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
