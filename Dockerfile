@@ -71,12 +71,8 @@ ENV OPENCLAW_PUBLIC_PORT=8080
 ENV PORT=8080
 EXPOSE 8080
 
-# Add todoist CLI (sachaos/todoist)
-RUN curl -L -o /tmp/todoist.tar.gz \
-      https://github.com/sachaos/todoist/releases/download/v0.23.0/todoist_Linux_x86_64.tar.gz && \
-    tar xf /tmp/todoist.tar.gz -C /usr/local/bin todoist && \
-    chmod +x /usr/local/bin/todoist && \
-    rm -f /tmp/todoist.tar.gz
+# Add todoist CLI (official Doist/todoist-cli)
+RUN npm install -g @doist/todoist-cli
 
 # Add rclone
 RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
