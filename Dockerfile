@@ -70,4 +70,14 @@ COPY src ./src
 ENV OPENCLAW_PUBLIC_PORT=8080
 ENV PORT=8080
 EXPOSE 8080
+
+# Add signal-cli native binary
+RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
+      https://github.com/AsamK/signal-cli/releases/latest | sed 's/^.*\/v//') && \
+    curl -L -O https://github.com/AsamK/signal-cli/releases/download/v"${VERSION}"/signal-cli-"${VERSION}"-Linux-native.tar.gz && \
+    tar xf signal-cli-"${VERSION}"-Linux-native.tar.gz && \
+    chmod +x signal-cli && \
+    mv signal-cli /usr/local/bin/signal-cli && \
+    rm -f signal-cli-"${VERSION}"-Linux-native.tar.gz
+
 CMD ["node", "src/server.js"]
