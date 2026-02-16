@@ -97,6 +97,17 @@
       "nodeManager": "npm"
     }
   },
+  "mcp": {
+    "servers": {
+      "todoist": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-todoist"],
+        "env": {
+          "TODOIST_API_TOKEN": "${TODOIST_API_KEY}"
+        }
+      }
+    }
+  },
   "plugins": {
     "entries": {
       "signal": {
