@@ -71,36 +71,4 @@ ENV OPENCLAW_PUBLIC_PORT=8080
 ENV PORT=8080
 EXPOSE 8080
 
-# Add todoist CLI (official Doist/todoist-cli)
-RUN npm install -g @doist/todoist-cli
-
-# Add rclone
-RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
-    dpkg -i rclone-current-linux-amd64.deb && \
-    rm -f rclone-current-linux-amd64.deb
-
-# Add signal-cli native binary
-RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
-      https://github.com/AsamK/signal-cli/releases/latest | sed 's/^.*\/v//') && \
-    curl -L -O https://github.com/AsamK/signal-cli/releases/download/v"${VERSION}"/signal-cli-"${VERSION}"-Linux-native.tar.gz && \
-    tar xf signal-cli-"${VERSION}"-Linux-native.tar.gz && \
-    chmod +x signal-cli && \
-    mv signal-cli /usr/local/bin/signal-cli && \
-    rm -f signal-cli-"${VERSION}"-Linux-native.tar.gz
-
-# Entrypoint: symlink signal-cli data to the persistent volume so account
-# registration survives redeploys, then start the wrapper.
-RUN printf '%s\n' \
-  '#!/usr/bin/env bash' \
-  'set -e' \
-  'mkdir -p /data/signal-cli' \
-  'mkdir -p /root/.local/share' \
-  'ln -sfn /data/signal-cli /root/.local/share/signal-cli' \
-  '# Persist rclone config across redeploys' \
-  'mkdir -p /data/rclone' \
-  'mkdir -p /root/.config' \
-  'ln -sfn /data/rclone /root/.config/rclone' \
-  'exec node src/server.js' \
-  > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
-
-CMD ["/app/entrypoint.sh"]
+CMD ["node", "src/server.js"]
