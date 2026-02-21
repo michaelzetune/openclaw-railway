@@ -96,9 +96,6 @@ RUN cat > /app/entrypoint.sh <<'EOF'
 #!/usr/bin/env bash
 set -e
 
-# Alias Todoist API key (CLI expects TODOIST_API_TOKEN)
-export TODOIST_API_TOKEN="${TODOIST_API_TOKEN:-$TODOIST_API_KEY}"
-
 # Ensure parent directories exist
 mkdir -p /root/.local/share
 mkdir -p /root/.config
