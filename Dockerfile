@@ -76,6 +76,11 @@ EXPOSE 8080
 # Add todoist CLI (official Doist/todoist-cli)
 RUN npm install -g @doist/todoist-cli
 
+# Add goplaces CLI
+ARG GOPLACES_VERSION=0.3.0
+RUN curl -sL "https://github.com/<owner>/goplaces/releases/download/v${GOPLACES_VERSION}/goplaces-linux-amd64" \
+    -o /usr/local/bin/goplaces && chmod +x /usr/local/bin/goplaces
+
 # Add signal-cli native binary
 RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
       https://github.com/AsamK/signal-cli/releases/latest | sed 's/^.*\/v//') && \
@@ -97,15 +102,19 @@ mkdir -p /root/.config
 
 # Persist signal-cli data
 mkdir -p /data/signal-cli
-ln -sfn /data/signal-cli /root/.local/share/signal-cli
+ln -sfn /data/signal-cli/data/data /root/.local/share/signal-cli
 
-# Persist vdirsyncer and khal data
+# Config dirs (contain config files)
+mkdir -p /data/config/vdirsyncer
+mkdir -p /data/config/khal
+ln -sfn /data/config/vdirsyncer /root/.config/vdirsyncer
+ln -sfn /data/config/khal /root/.config/khal
+
+# Data dirs (contain synced data, caches)
 mkdir -p /data/vdirsyncer
 mkdir -p /data/khal
 ln -sfn /data/vdirsyncer /root/.local/share/vdirsyncer
 ln -sfn /data/khal /root/.local/share/khal
-ln -sfn /data/vdirsyncer /root/.config/vdirsyncer
-ln -sfn /data/khal /root/.config/khal
 
 exec node src/server.js
 EOF
