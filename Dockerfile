@@ -91,9 +91,12 @@ RUN cat > /app/entrypoint.sh <<'EOF'
 #!/usr/bin/env bash
 set -e
 
+# Ensure parent directories exist
+mkdir -p /root/.local/share
+mkdir -p /root/.config
+
 # Persist signal-cli data
 mkdir -p /data/signal-cli
-mkdir -p /root/.local/share
 ln -sfn /data/signal-cli /root/.local/share/signal-cli
 
 # Persist vdirsyncer and khal data
