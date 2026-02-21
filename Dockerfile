@@ -78,8 +78,8 @@ RUN npm install -g @doist/todoist-cli
 
 # Add goplaces CLI
 ARG GOPLACES_VERSION=0.3.0
-RUN curl -sL "https://github.com/<owner>/goplaces/releases/download/v${GOPLACES_VERSION}/goplaces-linux-amd64" \
-    -o /usr/local/bin/goplaces && chmod +x /usr/local/bin/goplaces
+RUN curl -sL "https://github.com/steipete/goplaces/releases/download/v${GOPLACES_VERSION}/goplaces_${GOPLACES_VERSION}_linux_amd64.tar.gz" \
+    | tar xz -C /usr/local/bin goplaces && chmod +x /usr/local/bin/goplaces
 
 # Add signal-cli native binary
 RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
@@ -96,12 +96,23 @@ RUN cat > /app/entrypoint.sh <<'EOF'
 #!/usr/bin/env bash
 set -e
 
+# Alias Todoist API key (CLI expects TODOIST_API_TOKEN)
+export TODOIST_API_TOKEN="${TODOIST_API_TOKEN:-$TODOIST_API_KEY}"
+
 # Ensure parent directories exist
 mkdir -p /root/.local/share
 mkdir -p /root/.config
 
+# Restore GitHub SSH key for git push/pull
+if [ -n "$GITHUB_SSH_PRIVATE_KEY" ]; then
+  mkdir -p /root/.ssh
+  echo "$GITHUB_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+  chmod 600 /root/.ssh/id_rsa
+  ssh-keyscan github.com >> /root/.ssh/known_hosts 2>/dev/null
+fi
+
 # Persist signal-cli data
-mkdir -p /data/signal-cli
+mkdir -p /data/signal-cli/data/data
 ln -sfn /data/signal-cli/data/data /root/.local/share/signal-cli
 
 # Config dirs (contain config files)
