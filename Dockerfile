@@ -46,6 +46,8 @@ ENV NODE_ENV=production
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
+    vdirsyncer \
+    khal \
   && rm -rf /var/lib/apt/lists/*
 
 # `openclaw update` expects pnpm. Provide it in the runtime image.
@@ -71,4 +73,40 @@ ENV OPENCLAW_PUBLIC_PORT=8080
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["node", "src/server.js"]
+# Add todoist CLI (official Doist/todoist-cli)
+RUN npm install -g @doist/todoist-cli
+
+# Add signal-cli native binary
+RUN VERSION=$(curl -Ls -o /dev/null -w %{url_effective} \
+      https://github.com/AsamK/signal-cli/releases/latest | sed 's/^.*\/v//') && \
+    curl -L -O https://github.com/AsamK/signal-cli/releases/download/v"${VERSION}"/signal-cli-"${VERSION}"-Linux-native.tar.gz && \
+    tar xf signal-cli-"${VERSION}"-Linux-native.tar.gz && \
+    chmod +x signal-cli && \
+    mv signal-cli /usr/local/bin/signal-cli && \
+    rm -f signal-cli-"${VERSION}"-Linux-native.tar.gz
+
+# Entrypoint: symlink persistent data to the volume so configs/data
+# survive redeploys, then start the wrapper.
+RUN cat > /app/entrypoint.sh <<'EOF'
+#!/usr/bin/env bash
+set -e
+
+# Persist signal-cli data
+mkdir -p /data/signal-cli
+mkdir -p /root/.local/share
+ln -sfn /data/signal-cli /root/.local/share/signal-cli
+
+# Persist vdirsyncer and khal data
+mkdir -p /data/vdirsyncer
+mkdir -p /data/khal
+ln -sfn /data/vdirsyncer /root/.local/share/vdirsyncer
+ln -sfn /data/khal /root/.local/share/khal
+ln -sfn /data/vdirsyncer /root/.config/vdirsyncer
+ln -sfn /data/khal /root/.config/khal
+
+exec node src/server.js
+EOF
+
+RUN chmod +x /app/entrypoint.sh
+
+CMD ["/app/entrypoint.sh"]
